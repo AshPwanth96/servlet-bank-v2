@@ -13,8 +13,8 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minibank.dao.UserDao;
+import com.minibank.dto.ApiResponse;
 import com.minibank.dto.SignupRequest;
-import com.minibank.model.ApiResponse;
 import com.minibank.model.User;
 
 public class SignupServlet extends HttpServlet {
@@ -46,6 +46,7 @@ public class SignupServlet extends HttpServlet {
 			mapper.writeValue(res.getWriter(), response);
 			return;
 		}
+		
 		
 		if(password.length()<6){
 			ApiResponse response = new ApiResponse(false, "Password should be atlease 6 characters", null);

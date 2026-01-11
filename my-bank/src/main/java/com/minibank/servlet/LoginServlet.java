@@ -11,8 +11,8 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minibank.dao.UserDao;
+import com.minibank.dto.ApiResponse;
 import com.minibank.dto.LoginRequest;
-import com.minibank.model.ApiResponse;
 import com.minibank.model.User;
 import com.minibank.util.JwtUtil;
 

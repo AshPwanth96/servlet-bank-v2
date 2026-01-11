@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.minibank.model.ApiResponse;
+import com.minibank.dto.ApiResponse;
 import com.minibank.util.DataSourceUtil;
 import com.minibank.util.JwtUtil;
 

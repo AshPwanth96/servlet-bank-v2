@@ -10,5 +10,6 @@ com\minibank\dao\UserDao.class
 com\minibank\listener\AppContextListener.class
 com\minibank\dto\SignupRequest.class
 com\minibank\util\DataSourceUtil.class
+com\minibank\servlet\WithdrawServlet.class
 com\minibank\servlet\LoginServlet.class
 com\minibank\filter\JwtFilter.class
