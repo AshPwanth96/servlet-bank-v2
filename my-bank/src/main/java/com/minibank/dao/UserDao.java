@@ -5,10 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.sql.DataSource;
+
 import com.minibank.model.User;
 import com.minibank.util.DataSourceUtil;
 
 public class UserDao {
+	
 	
 	public boolean addUser(User user) {
 		String sql = "Insert into Users(username, password, full_name, email, balance) values (?, ?, ?, ? ,?)";
@@ -31,7 +34,7 @@ public class UserDao {
 		}
 	}
 
-	
+
 	public User getUserByUsername(String username) {
 	    String sql = "SELECT * FROM Users WHERE username = ?";
 
