@@ -12,11 +12,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minibank.dao.UserDao;
 import com.minibank.dto.ApiResponse;
 import com.minibank.model.User;
+import com.minibank.util.DataSourceUtil;
 import com.minibank.util.JwtUtil;
 
 public class DepositServlet extends HttpServlet {
 	
-	private UserDao userDao = new UserDao();
+	private UserDao userDao = new UserDao(DataSourceUtil.getDataSource());
 	
 	private ObjectMapper mapper = new ObjectMapper();
 	

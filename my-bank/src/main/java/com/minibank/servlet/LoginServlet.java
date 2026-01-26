@@ -14,11 +14,12 @@ import com.minibank.dao.UserDao;
 import com.minibank.dto.ApiResponse;
 import com.minibank.dto.LoginRequest;
 import com.minibank.model.User;
+import com.minibank.util.DataSourceUtil;
 import com.minibank.util.JwtUtil;
 
 public class LoginServlet extends HttpServlet {
 	
-	private UserDao userDao = new UserDao();
+	private UserDao userDao = new UserDao(DataSourceUtil.getDataSource());
 	private ObjectMapper mapper = new ObjectMapper();
 	
 	protected void doPost(HttpServletRequest req, HttpServletResponse res)throws ServletException, IOException{
