@@ -20,12 +20,11 @@ public class DashboardServlet extends HttpServlet {
     private UserDao userDao;
     private ObjectMapper mapper = new ObjectMapper();
 
-    @Override
-    public void init() throws ServletException {
-        userDao = new UserDao(DataSourceUtil.getDataSource());
+    public DashboardServlet() {
+        this.userDao = new UserDao(DataSourceUtil.getDataSource());
     }
 
-    public void setUserDao(UserDao userDao) {
+    public DashboardServlet(UserDao userDao) {
         this.userDao = userDao;
     }
 

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minibank.dao.UserDao;
@@ -21,47 +22,48 @@ import com.minibank.util.JwtUtil;
 
 public class DashboardServletTest {
 
-	@Test
-	void testDashboard_success() throws Exception {
+    @Test
+    void testDashboard_success() throws Exception {
 
-	    HttpServletRequest request = mock(HttpServletRequest.class);
-	    HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
 
-	    StringWriter stringWriter = new StringWriter();
-	    PrintWriter writer = new PrintWriter(stringWriter);
-	    when(response.getWriter()).thenReturn(writer);
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter writer = new PrintWriter(stringWriter);
+        when(response.getWriter()).thenReturn(writer);
 
-	    String token = JwtUtil.generateTokens("john");
-	    when(request.getHeader("Authorization"))
-	            .thenReturn("Bearer " + token);
+        when(request.getHeader("Authorization"))
+                .thenReturn("Bearer fake.jwt.token");
 
-	    UserDao mockDao = mock(UserDao.class);
+        UserDao mockDao = mock(UserDao.class);
 
-	    User user = new User(
-	            1,
-	            "john",
-	            "hashed",
-	            "John Doe",
-	            "john@test.com",
-	            new BigDecimal("1000"),
-	            new Timestamp(System.currentTimeMillis())
-	    );
+        User user = new User(
+                1,
+                "john",
+                "hashed",
+                "John Doe",
+                "john@test.com",
+                new BigDecimal("1000"),
+                new Timestamp(System.currentTimeMillis())
+        );
 
-	    when(mockDao.getUserByUsername("john")).thenReturn(user);
+        when(mockDao.getUserByUsername("john")).thenReturn(user);
 
-	    DashboardServlet servlet = new DashboardServlet();
-	    servlet.setUserDao(mockDao);
+        try (MockedStatic<JwtUtil> jwtMock = mockStatic(JwtUtil.class)) {
 
-	    servlet.doGet(request, response);
+            jwtMock.when(() -> JwtUtil.getUsernameFromToken("fake.jwt.token"))
+                   .thenReturn("john");
 
-	    writer.flush();
+            DashboardServlet servlet = new DashboardServlet(mockDao);
 
-	    String json = stringWriter.toString();
+            servlet.doGet(request, response);
+        }
 
-	    ApiResponse apiResponse =
-	            new ObjectMapper().readValue(json, ApiResponse.class);
+        writer.flush();
 
-	    assertTrue(apiResponse.isSuccess());
-	}
+        ApiResponse apiResponse =
+                new ObjectMapper().readValue(stringWriter.toString(), ApiResponse.class);
 
+        assertTrue(apiResponse.isSuccess());
+    }
 }

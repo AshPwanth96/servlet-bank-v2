@@ -27,11 +27,16 @@ public class UserDao {
             ps.setString(2, user.getPassword());
             ps.setString(3, user.getFullName());
             ps.setString(4, user.getEmail());
-            ps.setBigDecimal(5, user.getBalance());
+            ps.setBigDecimal(
+            	    5,
+            	    user.getBalance() != null ? user.getBalance() : java.math.BigDecimal.ZERO
+            	);
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
+        	e.printStackTrace(); 
             return false;
+            
         }
     }
 

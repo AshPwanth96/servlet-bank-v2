@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,12 +58,7 @@ public class DepositServletTest {
             jwtMock.when(() -> JwtUtil.getUsernameFromToken("fake.jwt.token"))
                    .thenReturn("john");
 
-            DepositServlet servlet = new DepositServlet();
-
-            Field userDaoField =
-                    DepositServlet.class.getDeclaredField("userDao");
-            userDaoField.setAccessible(true);
-            userDaoField.set(servlet, mockUserDao);
+            DepositServlet servlet = new DepositServlet(mockUserDao);
 
             servlet.doPost(request, response);
 

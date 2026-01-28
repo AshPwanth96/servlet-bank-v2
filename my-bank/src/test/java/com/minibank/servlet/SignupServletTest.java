@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 import java.io.ByteArrayInputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 
 import javax.servlet.ReadListener;
@@ -66,14 +65,9 @@ class SignupServletTest {
         UserDao mockUserDao = mock(UserDao.class);
 
         when(mockUserDao.getUserByUsername("john")).thenReturn(null);
-
         when(mockUserDao.addUser(any())).thenReturn(true);
 
-        SignupServlet servlet = new SignupServlet();
-
-        Field userDaoField = SignupServlet.class.getDeclaredField("userDao");
-        userDaoField.setAccessible(true);
-        userDaoField.set(servlet, mockUserDao);
+        SignupServlet servlet = new SignupServlet(mockUserDao);
 
         servlet.doPost(request, response);
 

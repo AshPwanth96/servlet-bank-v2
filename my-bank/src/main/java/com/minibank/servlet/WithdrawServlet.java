@@ -17,8 +17,16 @@ import com.minibank.util.JwtUtil;
 
 public class WithdrawServlet extends HttpServlet {
 
-    private final UserDao userDao = new UserDao(DataSourceUtil.getDataSource());
-    private final ObjectMapper mapper = new ObjectMapper();
+    private UserDao userDao;
+    private ObjectMapper mapper = new ObjectMapper();
+
+    public WithdrawServlet() {
+        this.userDao = new UserDao(DataSourceUtil.getDataSource());
+    }
+
+    public WithdrawServlet(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)

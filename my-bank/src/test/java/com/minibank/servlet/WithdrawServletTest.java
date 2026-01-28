@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,20 +58,15 @@ public class WithdrawServletTest {
             jwtMock.when(() -> JwtUtil.getUsernameFromToken("fake.jwt.token"))
                    .thenReturn("john");
 
-            WithdrawServlet servlet = new WithdrawServlet();
-
-            Field userDaoField =
-                    WithdrawServlet.class.getDeclaredField("userDao");
-            userDaoField.setAccessible(true);
-            userDaoField.set(servlet, mockUserDao);
+            WithdrawServlet servlet = new WithdrawServlet(mockUserDao);
 
             servlet.doPost(request, response);
-
-            writer.flush();
-            String output = stringWriter.toString();
-
-            assertTrue(output.contains("Withdrawal successful"));
-            assertTrue(output.contains("500"));
         }
+
+        writer.flush();
+        String output = stringWriter.toString();
+
+        assertTrue(output.contains("Withdrawal successful"));
+        assertTrue(output.contains("500"));
     }
 }

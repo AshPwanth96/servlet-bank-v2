@@ -77,11 +77,7 @@ class LoginServletTest {
 
         when(mockUserDao.getUserByUsername("john")).thenReturn(mockUser);
 
-        LoginServlet servlet = new LoginServlet();
-
-        Field userDaoField = LoginServlet.class.getDeclaredField("userDao");
-        userDaoField.setAccessible(true);
-        userDaoField.set(servlet, mockUserDao);
+        LoginServlet servlet = new LoginServlet(mockUserDao);
 
         servlet.doPost(request, response);
 

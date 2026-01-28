@@ -1,0 +1,22 @@
+services:
+  db:
+    image: mysql:8
+    container_name: mybank-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mybank
+      MYSQL_USER: bankuser
+      MYSQL_PASSWORD: bankpass
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  app:
+    build: .
+    container_name: mybank-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
