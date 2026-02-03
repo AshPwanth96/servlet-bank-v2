@@ -20,12 +20,13 @@ public class UserTest {
 				"secret",
 				"John Doe",
 				"John@test.com",
-				new BigDecimal(10000));
+				new BigDecimal(1000));
 		
 		assertEquals("John", user.getUsername());
 		assertEquals("secret", user.getPassword());
 		assertEquals("John Doe", user.getFullName());
 		assertEquals("John@test.com", user.getEmail());
+		
 		assertEquals(new BigDecimal("1000"), user.getBalance());
 	}
 	
