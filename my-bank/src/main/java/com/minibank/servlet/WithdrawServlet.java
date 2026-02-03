@@ -12,12 +12,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minibank.dao.UserDao;
 import com.minibank.dto.ApiResponse;
 import com.minibank.model.User;
+import com.minibank.util.DataSourceUtil;
 import com.minibank.util.JwtUtil;
 
 public class WithdrawServlet extends HttpServlet {
 
-    private final UserDao userDao = new UserDao();
-    private final ObjectMapper mapper = new ObjectMapper();
+    private UserDao userDao;
+    private ObjectMapper mapper = new ObjectMapper();
+
+    public WithdrawServlet() {
+        this.userDao = new UserDao(DataSourceUtil.getDataSource());
+    }
+
+    public WithdrawServlet(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res)

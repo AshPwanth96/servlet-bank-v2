@@ -28,36 +28,39 @@ public class JwtFilter implements javax.servlet.Filter {
 	}
 	
 	
-	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException{
-		
-		HttpServletRequest request = (HttpServletRequest) req;
-		HttpServletResponse response = (HttpServletResponse) res;
-		
-		String path = request.getServletPath();
-		
-		if(excludeUrls.contains(path)) {
-			chain.doFilter(request, response);
-			return;
-		}
-		
-		String authHeader = request.getHeader("Authorization");
-		
-		if(authHeader  == null||!authHeader.startsWith("Bearer ")) {
-			sendError(response, "Missing or invalid Authorization header");
-			return;
-		}
-		
-		String token = authHeader.substring(7);
-		
-		if(!JwtUtil.validateToken(token)) {
-			sendError(response, "Invalid or expired token");
-			return;
-		}
-		
-		chain.doFilter(request, response);
-		
-	}
+	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
+	        throws IOException, ServletException {
+
+	    HttpServletRequest request = (HttpServletRequest) req;
+	    HttpServletResponse response = (HttpServletResponse) res;
+
+	    String uri = request.getRequestURI();   
+
 	
+	    System.out.println("JWT FILTER URI = " + uri);
+
+	    if (uri.equals("/login") || uri.equals("/signup")) {
+	        chain.doFilter(request, response);
+	        return;
+	    }
+
+	    String authHeader = request.getHeader("Authorization");
+
+	    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+	        sendError(response, "Missing or invalid Authorization header");
+	        return;
+	    }
+
+	    String token = authHeader.substring(7);
+
+	    if (!JwtUtil.validateToken(token)) {
+	        sendError(response, "Invalid or expired token");
+	        return;
+	    }
+
+	    chain.doFilter(request, response);
+	}
+
 	private void sendError(HttpServletResponse res, String message) throws IOException{
 		res.setContentType("application/json");
 		res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

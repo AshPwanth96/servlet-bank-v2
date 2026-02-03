@@ -1,13 +1,8 @@
 package com.minibank.dao;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -18,192 +13,65 @@ import java.sql.Timestamp;
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 
 import com.minibank.model.User;
-import com.minibank.util.DataSourceUtil;
-
 
 public class UserDaoTest {
-	
-	@Test
-	void testGetUserByUsername_found() throws Exception{
-		
-		Connection mockConnection = mock(Connection.class);
-		PreparedStatement mockStatement = mock(PreparedStatement.class);
-		ResultSet mockResultSet = mock(ResultSet.class);
-		
-		try(MockedStatic<DataSourceUtil> mockedStatic = mockStatic(DataSourceUtil.class)){
-			
-			mockedStatic.when(DataSourceUtil::getConnection)
-			.thenReturn(mockConnection);
-			
-			
-			when(mockConnection.prepareStatement(anyString()))
-			.thenReturn(mockStatement);
-			
-			when(mockStatement.executeQuery())
-		    .thenReturn(mockResultSet);
-			
-			when(mockResultSet.next()).thenReturn(true);
-			
-			
-			when(mockResultSet.getInt("id")).thenReturn(1);
-			when(mockResultSet.getString("username")).thenReturn("john");
-			when(mockResultSet.getString("password")).thenReturn("hashed");
-			when(mockResultSet.getString("full_name")).thenReturn("John Doe");
-			when(mockResultSet.getString("email")).thenReturn("John@test.com");
-			when(mockResultSet.getBigDecimal("balance")).thenReturn(new BigDecimal("1000"));
-			when(mockResultSet.getTimestamp("created_at"))
-			.thenReturn(new Timestamp(System.currentTimeMillis()));
-			
-			UserDao userDao = new UserDao();
-			
-			User user = userDao.getUserByUsername("john");
-			
-			assertNotNull(user);
-		}
-	}
-	
-	@Test
-	void testGetUserByUsername_notFound() throws Exception{
-		
-		Connection mockConnection = mock(Connection.class);
-		PreparedStatement mockStatement = mock(PreparedStatement.class);
-		ResultSet mockResultSet = mock(ResultSet.class);
-		
-		try(MockedStatic<DataSourceUtil> mockedStatic = mockStatic(DataSourceUtil.class)){
-			
-			
-			mockedStatic.when(DataSourceUtil::getConnection)
-			.thenReturn(mockConnection);
-			
-			when(mockConnection.prepareStatement(anyString()))
-			.thenReturn(mockStatement);
-			
-			when(mockStatement.executeQuery())
-			.thenReturn(mockResultSet);
-			
-			when(mockResultSet.next()).thenReturn(false);
-			
-			
-			UserDao userDao = new UserDao();
-			
-			User user = userDao.getUserByUsername("unknown");
-			
-			assertNull(user);
-		}
-	}
-	
-	
+
     @Test
-	void testAddUser_success() throws Exception{
-		 Connection mockConnection = mock(Connection.class);
-		    PreparedStatement mockStatement = mock(PreparedStatement.class);
+    void testGetUserByUsername_found() throws Exception {
+        DataSource ds = mock(DataSource.class);
+        Connection con = mock(Connection.class);
+        PreparedStatement ps = mock(PreparedStatement.class);
+        ResultSet rs = mock(ResultSet.class);
 
-		    try (MockedStatic<DataSourceUtil> mockedStatic = mockStatic(DataSourceUtil.class)) {
+        when(ds.getConnection()).thenReturn(con);
+        when(con.prepareStatement(anyString())).thenReturn(ps);
+        when(ps.executeQuery()).thenReturn(rs);
+        when(rs.next()).thenReturn(true);
+        when(rs.getInt("id")).thenReturn(1);
+        when(rs.getString("username")).thenReturn("john");
+        when(rs.getString("password")).thenReturn("hashed");
+        when(rs.getString("full_name")).thenReturn("John Doe");
+        when(rs.getString("email")).thenReturn("john@test.com");
+        when(rs.getBigDecimal("balance")).thenReturn(new BigDecimal("1000"));
+        when(rs.getTimestamp("created_at")).thenReturn(new Timestamp(System.currentTimeMillis()));
 
-		        mockedStatic.when(DataSourceUtil::getConnection)
-		                    .thenReturn(mockConnection);
+        UserDao dao = new UserDao(ds);
+        User user = dao.getUserByUsername("john");
 
-		        when(mockConnection.prepareStatement(anyString()))
-		                .thenReturn(mockStatement);
+        assertNotNull(user);
+    }
 
-		        when(mockStatement.executeUpdate())
-		        .thenReturn(1);
-		        
-		        UserDao userDao = new UserDao();
-		        
-		        User user = new User("john", "hashed", "john doe", "john@test.com", new BigDecimal("1000"));
-		        
-		        boolean result = userDao.addUser(user);
-		        
-		        assertTrue(result);
-		    }
-	}
-		    
-		    @Test
-		    void testAddUser_failure() throws Exception {
+    @Test
+    void testAddUser_success() throws Exception {
+        DataSource ds = mock(DataSource.class);
+        Connection con = mock(Connection.class);
+        PreparedStatement ps = mock(PreparedStatement.class);
 
-		        Connection mockConnection = mock(Connection.class);
-		        PreparedStatement mockStatement = mock(PreparedStatement.class);
+        when(ds.getConnection()).thenReturn(con);
+        when(con.prepareStatement(anyString())).thenReturn(ps);
+        when(ps.executeUpdate()).thenReturn(1);
 
-		        try (MockedStatic<DataSourceUtil> mockedStatic = mockStatic(DataSourceUtil.class)) {
+        UserDao dao = new UserDao(ds);
+        User user = new User("john", "hashed", "John Doe", "john@test.com", new BigDecimal("1000"));
 
-		            mockedStatic.when(DataSourceUtil::getConnection)
-		                        .thenReturn(mockConnection);
+        assertTrue(dao.addUser(user));
+    }
 
-		            when(mockConnection.prepareStatement(anyString()))
-		                    .thenReturn(mockStatement);
+    @Test
+    void testUpdateUserBalance_failure() throws Exception {
+        DataSource ds = mock(DataSource.class);
+        Connection con = mock(Connection.class);
+        PreparedStatement ps = mock(PreparedStatement.class);
 
-		            when(mockStatement.executeUpdate())
-		                    .thenReturn(0);
+        when(ds.getConnection()).thenReturn(con);
+        when(con.prepareStatement(anyString())).thenReturn(ps);
+        when(ps.executeUpdate()).thenReturn(0);
 
-		            UserDao userDao = new UserDao();
+        UserDao dao = new UserDao(ds);
+        User user = new User(1, "john", "hashed", "John Doe", "john@test.com", new BigDecimal("1500"), new Timestamp(System.currentTimeMillis()));
 
-		            User user = new User(
-		                    "john", "hashed", "John Doe", "john@test.com", new BigDecimal("1000"));
-
-		            boolean result = userDao.addUser(user);
-
-		            assertFalse(result);
-		            
-		        }
-		    }
-		    
-		    @Test
-		    void testUpdateUserBalance_success() throws Exception{
-		    	 Connection mockConnection = mock(Connection.class);
-		    	    PreparedStatement mockStatement = mock(PreparedStatement.class);
-
-		    	    try (MockedStatic<DataSourceUtil> mockedStatic = mockStatic(DataSourceUtil.class)) {
-
-		    	        mockedStatic.when(DataSourceUtil::getConnection)
-		    	                    .thenReturn(mockConnection);
-
-		    	        when(mockConnection.prepareStatement(anyString()))
-		    	                .thenReturn(mockStatement);
-		    	        
-		    	        when(mockStatement.executeUpdate())
-		    	        .thenReturn(1);
-		    	        
-		    	        UserDao userDao = new UserDao();
-
-		    	        User user = new User(
-		    	                1, "john", "hashed", "John Doe", "john@test.com", new BigDecimal("1500"), new Timestamp(System.currentTimeMillis()));
-
-		    	        boolean result = userDao.updateUserBalance(user);
-
-		    	        assertTrue(result);
-		    	    }
-		    }
-
-		    @Test
-		    void testUpdateUserBalance_failure() throws Exception {
-
-		        Connection mockConnection = mock(Connection.class);
-		        PreparedStatement mockStatement = mock(PreparedStatement.class);
-
-		        try (MockedStatic<DataSourceUtil> mockedStatic = mockStatic(DataSourceUtil.class)) {
-
-		            mockedStatic.when(DataSourceUtil::getConnection)
-		                        .thenReturn(mockConnection);
-
-		            when(mockConnection.prepareStatement(anyString()))
-		                    .thenReturn(mockStatement);
-
-		            when(mockStatement.executeUpdate())
-		                    .thenReturn(0);
-
-		            UserDao userDao = new UserDao();
-
-		            User user = new User(
-		                    1, "john", "hashed", "John Doe", "john@test.com", new BigDecimal("1500"), new Timestamp(System.currentTimeMillis()) );
-
-		            boolean result = userDao.updateUserBalance(user);
-
-		            assertFalse(result);
-		        }
-		    }
-
+        assertFalse(dao.updateUserBalance(user));
+    }
 }

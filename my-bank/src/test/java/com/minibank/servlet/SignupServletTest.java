@@ -6,8 +6,6 @@ import static org.mockito.Mockito.*;
 import java.io.ByteArrayInputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Field;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 
 import javax.servlet.ReadListener;
@@ -16,20 +14,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.Test;
-import org.mindrot.jbcrypt.BCrypt;
 
 import com.minibank.dao.UserDao;
-import com.minibank.model.User;
 
-class LoginServletTest {
+class SignupServletTest {
 
     @Test
-    void testLogin_success() throws Exception {
+    void testSignup_success() throws Exception {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
 
-        String jsonBody = "{ \"username\": \"john\", \"password\": \"password123\" }";
+        String jsonBody =
+                "{ \"username\": \"john\", " +
+                "\"password\": \"password123\", " +
+                "\"fullName\": \"John Doe\", " +
+                "\"email\": \"john@test.com\" }";
+
         ByteArrayInputStream inputStream =
                 new ByteArrayInputStream(jsonBody.getBytes(StandardCharsets.UTF_8));
 
@@ -63,28 +64,17 @@ class LoginServletTest {
 
         UserDao mockUserDao = mock(UserDao.class);
 
-        String hashedPassword = BCrypt.hashpw("password123", BCrypt.gensalt());
+        when(mockUserDao.getUserByUsername("john")).thenReturn(null);
+        when(mockUserDao.addUser(any())).thenReturn(true);
 
-        User mockUser = new User(
-                1,
-                "john",
-                hashedPassword,
-                "John Doe",
-                "john@test.com",
-                new BigDecimal("1000"),
-                null
-        );
-
-        when(mockUserDao.getUserByUsername("john")).thenReturn(mockUser);
-
-        LoginServlet servlet = new LoginServlet(mockUserDao);
+        SignupServlet servlet = new SignupServlet(mockUserDao);
 
         servlet.doPost(request, response);
 
         writer.flush();
         String output = stringWriter.toString();
 
-        assertTrue(output.contains("Login Successful"));
+        assertTrue(output.contains("User created successfully"));
         assertTrue(output.contains("true"));
     }
 }

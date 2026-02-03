@@ -22,7 +22,7 @@ Language: Java 8+
 
 Server: Apache Tomcat 9.0+
 
-Database: Any compatible database (MySQL/PostgreSQL)
+Database: Any compatible database (MySQL)
 
 Tools: Liquibase, HikariCP, JJWT, jBCrypt, Jackson Databind 
 
@@ -41,3 +41,33 @@ POST	/deposit	Add funds to your account (requires security token).
 
 
 POST	/withdraw	Take funds from your account (requires security token).
+
+
+New Updates (Recent Additions)
+
+1. Heavy Testing (JUnit & Mockito)
+
+I wrote tests for almost everything to make sure the code doesn't break when I change things.
+
+Model Tests: Making sure the User data stays correct.
+
+DAO Tests: I used Mockito to mock the DataSource and ResultSet. This lets me test database code (like getUserByUsername and updateUserBalance) without needing a real database running.
+
+Servlet Tests: I added tests for LoginServlet, SignupServlet, DepositServlet, and WithdrawServlet. They simulate real JSON requests and check if the API returns "Success" or "Failure" correctly.
+
+2. Better Logging
+
+I moved away from simple print statements. Now the app uses a Logging framework to track user actions and errors. It shows the time and what happened (INFO for normal stuff, ERROR for bugs), which makes it much easier to fix problems.
+
+3. Docker & Docker Compose
+
+The project is now fully containerized using two separate parts:
+
+App Image: I created a Dockerfile that packages my Java code, Tomcat, and all my tools (Liquibase, etc.) into one image.
+
+Database Image: I use a second image for the database (MySQL).
+
+Docker Compose: I created a docker-compose.yml file so you can start the entire system (the API + the Database) with just one command:
+docker-compose up --build
+
+This makes sure the API and the DB can talk to each other automatically without any manual setup.
